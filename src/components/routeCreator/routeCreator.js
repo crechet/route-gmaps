@@ -6,7 +6,7 @@ import Points from '../points/points';
 const RouteCreator = ({ points }) => {
     return(
         <div>
-            <p>Route Creator Component</p>
+            <p>Route Creator - Wrapper for points and map</p>
             <Points points={ points }/>
         </div>
     );
