@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
+import pointsReducer from './pointsReducer';
 
 export default combineReducers({
-    state: (state = {} ) => state
+    points: pointsReducer
 });
