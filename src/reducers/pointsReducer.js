@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import { ADD_POINT } from '../constants';
 
-export default (state = ['a', 'b', 'c'], action) => {
+const defaultState = ['a', 'b', 'c'];
+
+export default (state = defaultState, action) => {
     switch (action.type) {
         case ADD_POINT:
             return _.concat(state, action.point);

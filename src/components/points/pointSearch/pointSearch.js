@@ -1,22 +1,39 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './pointSearch.css';
 
-const PointSearch = ({ addPoint }) => {
-    const handleFormSubmit = (event) => {
+class PointSearch extends Component {
+    constructor(props) {
+        super(props);
+        this.placeholder = 'Поиск точки';
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    }
+
+    componentDidMount() {
+        this.searchInput.focus();
+    }
+
+    handleFormSubmit(event) {
         event.preventDefault();
-        let input = event.target.children["newPoint"];
-        addPoint(input.value);
-        input.value = null;
-    };
+        console.log(this.searchInput.value);
+        this.props.addPoint(this.searchInput.value);
+        this.searchInput.value = null;
+    }
 
-    return(
-        <div>
-            <form onSubmit={ handleFormSubmit }>
-                <input type="text" name="newPoint" />
-            </form>
-        </div>
-    );
-};
+    render() {
+        return (
+            <div className="point-search">
+                <form onSubmit={ this.handleFormSubmit } className="form">
+                    <div className="form-control">
+                        <input type="text" className="input" name="newPoint" autoComplete="off"
+                               placeholder={ this.placeholder }
+                               ref={ (input) => { this.searchInput = input; } } />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
 
 PointSearch.propTypes = {
     addPoint: PropTypes.func.isRequired
