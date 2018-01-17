@@ -1,9 +1,12 @@
 import React from 'react';
-import RouteCreator from '../containers/RouteCreator';
+
+import './root.css';
+
+import RouteCreator from '../../containers/RouteCreator';
 
 export default () => {
     return(
-        <div>
+        <div className="root">
             <RouteCreator />
         </div>
     );
