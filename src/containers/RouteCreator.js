@@ -8,4 +8,7 @@ const mapStateToProps = ({ points }) => {
 
 const mapDispatchToProps = null;
 
+// export class RouteCreator for test;
+// export { RouteCreator };
+
 export default connect(mapStateToProps, mapDispatchToProps)(RouteCreator);
