@@ -1,5 +1,7 @@
+@import 'styles/_variables.scss';
+
 .points {
-    background-color: crimson;
+    background-color: $turquoise-lightest;
     position: absolute;
     margin: 0.5%;
     top: 0;
@@ -8,6 +10,8 @@
     max-width: 25%;
     max-height: 70vh;
     border-radius: 5px;
+    border: 1px solid $turquoise-dark;
+    box-shadow: 2px 2px 7px $turquoise-darkest;
     overflow-y: auto;
     z-index: 2;
 }
