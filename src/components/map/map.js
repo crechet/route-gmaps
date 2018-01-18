@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import './map.css';
 
 /**
@@ -6,17 +7,23 @@ import './map.css';
  * */
 
 export default class Map extends Component {
-    // Never rerender.
+    // Render one time and never render again.
     shouldComponentUpdate() {
         return false;
     }
 
-    componentDidMount() {
-        window.initMap = this.initMap.bind(this);
-        this.loadMap();
+    // Update map props here.
+    componentWillReceiveProps(nextProps) {
+        // Call internal map library methods.
+        // this.map.panTo();
     }
 
-    loadMap() {
+    componentDidMount() {
+        window.initMap = this.initMap.bind(this);
+        this.addMap();
+    }
+
+    addMap() {
         const scriptTag = window.document.getElementsByTagName('script')[0];
         const scriptMap = window.document.createElement('script');
         scriptMap.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDp39kg5fDCh-WnF2DmhBT4-yYVoVO3HVg&callback=initMap';
@@ -26,16 +33,20 @@ export default class Map extends Component {
     }
 
     initMap() {
-        console.log('try init map');
-        this.map = new window.google.maps.Map(document.getElementById('map'), {
-            center: {lat: -34.397, lng: 150.644},
+        this.map = new window.google.maps.Map(this.refs.map, {
+            center: { lat: this.props.lat, lng: this.props.lng },
             zoom: 8
         });
     }
 
     render() {
         return(
-            <div id="map" className="map"></div>
+            <div id="map" className="map" ref="map"></div>
         );
     }
 }
+
+Map.propTypes = {
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+};

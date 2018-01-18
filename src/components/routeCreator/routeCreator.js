@@ -10,7 +10,7 @@ export default class RouteCreator extends Component {
         return(
             <div className="route-creator">
                 <Points points={ this.props.points }/>
-                <Map />
+                <Map lat={-34.397} lng={150.644} />
             </div>
         );
     }
