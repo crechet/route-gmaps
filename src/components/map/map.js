@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './map.css';
 
+import { MAP_API } from '../../constants';
+
 /**
  * Wrapper component for external map library. Manage all relationship between react and map library.
  * */
@@ -26,7 +28,7 @@ export default class Map extends Component {
     addMap() {
         const scriptTag = window.document.getElementsByTagName('script')[0];
         const scriptMap = window.document.createElement('script');
-        scriptMap.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDp39kg5fDCh-WnF2DmhBT4-yYVoVO3HVg&callback=initMap';
+        scriptMap.src = `${MAP_API}&callback=initMap`;
         scriptMap.async = true;
         scriptMap.defer = true;
         scriptTag.parentNode.insertBefore(scriptMap, scriptTag);
