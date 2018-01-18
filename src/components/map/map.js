@@ -28,7 +28,7 @@ export default class Map extends Component {
     addMap() {
         const scriptTag = window.document.getElementsByTagName('script')[0];
         const scriptMap = window.document.createElement('script');
-        scriptMap.src = `${MAP_API}&callback=initMap`;
+        scriptMap.src = `${MAP_API}&callback=initMap&libraries=places`;
         scriptMap.async = true;
         scriptMap.defer = true;
         scriptTag.parentNode.insertBefore(scriptMap, scriptTag);
