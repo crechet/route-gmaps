@@ -2,48 +2,45 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './map.css';
 
-import { MAP_API } from '../../constants';
-
 /**
  * Wrapper component for external map library. Manage all relationship between react and map library.
  * */
 
 export default class Map extends Component {
     // Render one time and never render again.
-    shouldComponentUpdate() {
+    // TODO check this...
+    /*shouldComponentUpdate() {
         return false;
-    }
+    }*/
 
-    // Update map props here.
+    // Component receive new props, but not update current props. Update map props here.
     componentWillReceiveProps(nextProps) {
         // Call internal map library methods.
         // this.map.panTo();
+        // console.log('componentWillReceiveProps', this.props);
     }
 
     componentDidMount() {
-        window.initMap = this.initMap.bind(this);
-        this.addMap();
+        // console.log('componentDidMount', this.props);
     }
 
-    addMap() {
-        const scriptTag = window.document.getElementsByTagName('script')[0];
-        const scriptMap = window.document.createElement('script');
-        scriptMap.src = `${MAP_API}&callback=initMap&libraries=places`;
-        scriptMap.async = true;
-        scriptMap.defer = true;
-        scriptTag.parentNode.insertBefore(scriptMap, scriptTag);
+    // Component have new props values.
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.mapApi !== this.props.mapApi) {
+            this.initMap();
+        }
     }
 
     initMap() {
-        this.map = new window.google.maps.Map(this.refs.map, {
+        this.map = new this.props.mapApi.maps.Map(this.refs.map, {
             center: { lat: this.props.lat, lng: this.props.lng },
-            zoom: 8
+            zoom: this.props.zoom
         });
     }
 
     render() {
         return(
-            <div id="map" className="map" ref="map"></div>
+            <div id="test" className="map" ref="map"></div>
         );
     }
 }
