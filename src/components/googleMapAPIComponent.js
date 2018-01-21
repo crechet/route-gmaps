@@ -15,6 +15,7 @@ const googleMapAPIComponent = (ComposedComponent) => {
 
             // Load Google Map api.
             GoogleMapsLoader.KEY = GOOGLE_API_KEY;
+            GoogleMapsLoader.LIBRARIES = ['places'];
             GoogleMapsLoader.load();
             GoogleMapsLoader.onLoad(this.onApiLoad);
 
@@ -26,11 +27,9 @@ const googleMapAPIComponent = (ComposedComponent) => {
 
         onApiLoad(google) {
             // Update state with loaded api.
-            this.mapApi = google;
-
             this.setState({
                 mapApiLoaded: true,
-                mapApi: this.mapApi
+                mapApi: google
             });
         }
 

@@ -7,16 +7,40 @@ class PointSearch extends Component {
         super(props);
         this.placeholder = 'Поиск точки';
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    }
+        this.initPointSearch = this.initPointSearch.bind(this);
+
+        this.state = {
+            place: null,
+            position: null
+        }
+    };
 
     componentDidMount() {
+        // Focus user to input field.
         this.searchInput.focus();
+        this.initPointSearch();
+    }
+
+    initPointSearch() {
+        let { mapApi, map } = this.props;
+        if (!mapApi || !map) return false;
+
+        // Add autocomplete functionality to input field.
+        let autocomplete = new mapApi.maps.places.Autocomplete(this.searchInput);
+        autocomplete.bindTo('bounds', map);
+
+        // On place selected.
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                return;
+            }
+        });
     }
 
     handleFormSubmit(event) {
         event.preventDefault();
-        console.log(this.searchInput.value);
-        this.props.addPoint(this.searchInput.value);
+        // this.props.addPoint(this.searchInput.value);
         this.searchInput.value = null;
     }
 

@@ -4,22 +4,29 @@ import googleMapAPIComponent from '../googleMapAPIComponent';
 
 import './routeCreator.css';
 
-import Points from '../points/points';
+// import Points from '../points/points';
 import Map from '../map/map';
 
 export class RouteCreator extends Component {
     render() {
-        return(
-            <div className="route-creator">
-                <Points points={ this.props.points }/>
-                <Map mapApi={ this.props.mapApi } lat={-34.397} lng={150.644} zoom={8} />
-            </div>
-        );
+        let { mapApi, points } = this.props;
+
+        if (!mapApi) {
+            return( <div className="route-creator">Google Map loading...</div> );
+        } else {
+            return(
+                <div className="route-creator">
+                    {/*<Points mapApi={ mapApi } points={ points }/>*/}
+                    <Map mapApi={ mapApi } lat={59.9403958} lng={30.31379620000007} zoom={8}></Map>
+                </div>
+            );
+        }
     }
 }
 
 RouteCreator.propTypes = {
-    // points: PropTypes.array.isRequired
+    // points: PropTypes.array.isRequired,
+    // mapApi: PropTypes.object
 };
 
 export default googleMapAPIComponent(RouteCreator);
