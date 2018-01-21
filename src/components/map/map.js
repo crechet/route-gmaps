@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 import './map.css';
 
@@ -13,6 +14,9 @@ export default class Map extends Component {
         super(props);
 
         this.handleAddPoint = this.handleAddPoint.bind(this);
+        this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
+        this.directionsService = null;
+        this.directionsDisplay = null;
 
         this.state = {
             lat: Map.defaultProps.lat,
@@ -46,25 +50,6 @@ export default class Map extends Component {
         this.initMap();
     }
 
-    handleAddPoint(place) {
-        if (!place) return false;
-        console.log('place', place);
-        let { map } = this.state;
-        debugger;
-        // Center map to selected position.
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.location);
-            map.setZoom(17);
-        }
-
-        this.setState({
-            points: { ...this.state.points, [place.id]: place }
-        });
-        console.log('state', this.state);
-    }
-
     initMap() {
         if (this.props && this.props.mapApi) {
             const { mapApi } = this.props;
@@ -77,13 +62,75 @@ export default class Map extends Component {
                 zoom
             };
 
-            this.setState({
-                map: new mapApi.maps.Map(this.refs.map, mapConfig),
-                lat,
-                lng,
-                zoom
-            });
+            // Initiate map.
+            this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig), lat, lng, zoom });
         }
+    }
+
+    calculateAndDisplayRoute() {
+        // TODO rearange waypoints.
+        const generateWaypoints = () => {
+            return _.map(this.state.points, (point) => {
+                return {
+                    location: point.geometry.location,
+                    stopover: true
+                }
+            });
+        };
+
+        let waypoints = generateWaypoints();
+        if (waypoints.length < 2) return;
+
+        let { mapApi } = this.props;
+        let { map } = this.state;
+
+        // Add directionsService for calculating routes.
+        const directionsService = new mapApi.maps.DirectionsService();
+        // Add directionsDisplay for displaying calculated route.
+        const directionsDisplay = new mapApi.maps.DirectionsRenderer();
+        // Bind directionsDisplay to our map.
+        directionsDisplay.setMap(map);
+
+        let routeRequestConfig = {
+            origin: waypoints[0].location,
+            destination: waypoints[waypoints.length - 1].location,
+            waypoints: waypoints,
+            optimizeWaypoints: true,
+            travelMode: 'DRIVING'
+        };
+
+        directionsService.route(routeRequestConfig, function(response, status) {
+            if (status === 'OK') {
+                // Display calculated route.
+                console.log('calculated route response', response);
+                directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+
+    handleAddPoint(place) {
+        if (!place) return false;
+        console.log('place', place);
+        let { map } = this.state;
+
+        // Center map to selected position.
+        if (_.size(this.state.points) < 2) {
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+        }
+
+        // Add place to points list.
+        this.setState({
+            points: { ...this.state.points, [place.id]: place }
+        });
+
+        this.calculateAndDisplayRoute();
     }
 
     renderPoints() {

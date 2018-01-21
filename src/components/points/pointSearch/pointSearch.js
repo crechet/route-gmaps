@@ -42,15 +42,15 @@ class PointSearch extends Component {
             this.setState({
                 place: place,
                 position: place.geometry.location
-            })
+            });
+
+            // Clear input field.
+            this.searchInput.value = null;
         });
     }
 
     handleFormSubmit(event) {
         event.preventDefault();
-        // this.props.addPoint(this.searchInput.value);
-        console.log(this.searchInput.value);
-        this.searchInput.value = null;
     }
 
     render() {
