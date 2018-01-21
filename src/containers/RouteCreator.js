@@ -2,10 +2,10 @@ import { connect } from 'react-redux';
 
 import RouteCreator from '../components/routeCreator/routeCreator';
 
-// const mapStateToProps = null;
-const mapStateToProps = ({ points }) => {
+const mapStateToProps = null;
+/*const mapStateToProps = ({ points }) => {
     return { points };
-};
+};*/
 
 const mapDispatchToProps = null;
 

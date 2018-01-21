@@ -8,6 +8,6 @@ const store = createStore(
     applyMiddleware(reduxThunk)
 );
 
-console.log(store.getState());
+console.log('This is dummy: ', store.getState());
 
 export default store;

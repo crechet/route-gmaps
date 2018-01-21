@@ -5,7 +5,7 @@ import './pointSearch.css';
 class PointSearch extends Component {
     constructor(props) {
         super(props);
-        this.placeholder = 'Поиск точки';
+        this.placeholder = 'Поиск места...';
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.initPointSearch = this.initPointSearch.bind(this);
 

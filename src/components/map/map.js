@@ -15,15 +15,15 @@ export default class Map extends Component {
 
         this.handleAddPoint = this.handleAddPoint.bind(this);
         this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
-        this.directionsService = null;
-        this.directionsDisplay = null;
+        this.addPointMarker = this.addPointMarker.bind(this);
 
         this.state = {
             lat: Map.defaultProps.lat,
             lng: Map.defaultProps.lng,
             zoom: Map.defaultProps.zoom,
             map: null,
-            points: {}
+            // points: {}
+            points: []
         };
     }
     // Render one time and never render again.
@@ -69,40 +69,44 @@ export default class Map extends Component {
 
     calculateAndDisplayRoute() {
         // TODO rearange waypoints.
+        let { mapApi } = this.props;
+        let { map, points } = this.state;
+
         const generateWaypoints = () => {
-            return _.map(this.state.points, (point) => {
+            return _.map(points, (point) => {
                 return {
                     location: point.geometry.location,
                     stopover: true
                 }
             });
         };
-
         let waypoints = generateWaypoints();
-        if (waypoints.length < 2) return;
-
-        let { mapApi } = this.props;
-        let { map } = this.state;
 
         // Add directionsService for calculating routes.
         const directionsService = new mapApi.maps.DirectionsService();
+
         // Add directionsDisplay for displaying calculated route.
-        const directionsDisplay = new mapApi.maps.DirectionsRenderer();
-        // Bind directionsDisplay to our map.
-        directionsDisplay.setMap(map);
+        let directionsRendererConfig = {
+            // Bind directionsDisplay to our map.
+            map: map,
+            preserveViewport: true,
+            // draggable: true
+        };
+        const directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
 
         let routeRequestConfig = {
             origin: waypoints[0].location,
             destination: waypoints[waypoints.length - 1].location,
             waypoints: waypoints,
             optimizeWaypoints: true,
-            travelMode: 'DRIVING'
+            travelMode: 'DRIVING',
+            unitSystem: mapApi.maps.UnitSystem.METRIC
         };
 
         directionsService.route(routeRequestConfig, function(response, status) {
             if (status === 'OK') {
-                // Display calculated route.
                 console.log('calculated route response', response);
+                // Display calculated route.
                 directionsDisplay.setDirections(response);
             } else {
                 window.alert('Directions request failed due to ' + status);
@@ -110,27 +114,49 @@ export default class Map extends Component {
         });
     }
 
+    // Adds new point to the points list.
     handleAddPoint(place) {
         if (!place) return false;
         console.log('place', place);
         let { map } = this.state;
 
         // Center map to selected position.
-        if (_.size(this.state.points) < 2) {
-            if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
-            } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);
-            }
+        if (place.geometry && place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+            map.setCenter(place.geometry.location);
+        } else {
+            map.setZoom(15);
+            map.setCenter(place.geometry.location);
         }
 
         // Add place to points list.
         this.setState({
-            points: { ...this.state.points, [place.id]: place }
+            // TODO: objects or array...
+            // points: { ...this.state.points, [place.id]: place }
+            points: this.state.points.concat(place)
         });
 
+        //this.addPointMarker(place);
         this.calculateAndDisplayRoute();
+    }
+
+    // TODO not in use now...
+    addPointMarker(place) {
+        /*if (!place) return false;
+        let { mapApi } = this.props;
+        let { map } = this.state;
+
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);
+        }
+
+        let marker = new mapApi.maps.Marker({
+            position: place.geometry.location,
+            map
+        });*/
     }
 
     renderPoints() {
