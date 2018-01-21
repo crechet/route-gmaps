@@ -12,11 +12,14 @@ export default class Map extends Component {
     constructor(props) {
         super(props);
 
+        this.handleAddPoint = this.handleAddPoint.bind(this);
+
         this.state = {
             lat: Map.defaultProps.lat,
             lng: Map.defaultProps.lng,
             zoom: Map.defaultProps.zoom,
-            map: null
+            map: null,
+            points: {}
         };
     }
     // Render one time and never render again.
@@ -43,6 +46,25 @@ export default class Map extends Component {
         this.initMap();
     }
 
+    handleAddPoint(place) {
+        if (!place) return false;
+        console.log('place', place);
+        let { map } = this.state;
+        debugger;
+        // Center map to selected position.
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);
+        }
+
+        this.setState({
+            points: { ...this.state.points, [place.id]: place }
+        });
+        console.log('state', this.state);
+    }
+
     initMap() {
         if (this.props && this.props.mapApi) {
             const { mapApi } = this.props;
@@ -64,14 +86,22 @@ export default class Map extends Component {
         }
     }
 
-    render() {
+    renderPoints() {
         let { mapApi } = this.props;
-        let { map } = this.state;
+        let { map, points } = this.state;
 
+        if (map) {
+            return(
+                <Points mapApi={ mapApi } map={ map } onAddPoint={ this.handleAddPoint } points={ points } />
+            );
+        }
+    }
+
+    render() {
         return(
             <div className="map">
                 <div className="map" ref="map"></div>
-                { map ? <Points mapApi={ mapApi } map={ map } /> : "" }
+                { this.renderPoints() }
             </div>
         );
     }
@@ -87,5 +117,5 @@ Map.propTypes = {
 Map.defaultProps = {
     lat: 59.9403958,
     lng: 30.31379620000007,
-    zoom: 8
+    zoom: 12
 };

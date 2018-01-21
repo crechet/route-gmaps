@@ -22,7 +22,7 @@ class PointSearch extends Component {
     }
 
     initPointSearch() {
-        let { mapApi, map } = this.props;
+        let { mapApi, map, onAddPoint } = this.props;
         if (!mapApi || !map) return false;
 
         // Add autocomplete functionality to input field.
@@ -33,14 +33,23 @@ class PointSearch extends Component {
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
             if (!place.geometry) {
+                onAddPoint(null);
                 return;
             }
+
+            onAddPoint(place);
+
+            this.setState({
+                place: place,
+                position: place.geometry.location
+            })
         });
     }
 
     handleFormSubmit(event) {
         event.preventDefault();
         // this.props.addPoint(this.searchInput.value);
+        console.log(this.searchInput.value);
         this.searchInput.value = null;
     }
 
@@ -60,7 +69,8 @@ class PointSearch extends Component {
 }
 
 PointSearch.propTypes = {
-    addPoint: PropTypes.func.isRequired
+    addPoint: PropTypes.func.isRequired,
+    onAddPoint: PropTypes.func.isRequired
 };
 
 export default PointSearch;

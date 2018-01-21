@@ -9,7 +9,8 @@ import Map from '../map/map';
 
 export class RouteCreator extends Component {
     render() {
-        let { mapApi, points } = this.props;
+        // let { mapApi, points } = this.props;
+        let { mapApi } = this.props;
 
         if (!mapApi) {
             return( <div className="route-creator">Google Map loading...</div> );

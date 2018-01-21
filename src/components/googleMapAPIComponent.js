@@ -13,16 +13,20 @@ const googleMapAPIComponent = (ComposedComponent) => {
 
             this.onApiLoad = this.onApiLoad.bind(this);
 
-            // Load Google Map api.
-            GoogleMapsLoader.KEY = GOOGLE_API_KEY;
-            GoogleMapsLoader.LIBRARIES = ['places'];
-            GoogleMapsLoader.load();
-            GoogleMapsLoader.onLoad(this.onApiLoad);
+            // Load Google Maps api.
+            this.loadGoogleMapsApi();
 
             this.state = {
                 mapApiLoaded: false,
                 mapApi: null
             };
+        }
+
+        loadGoogleMapsApi() {
+            GoogleMapsLoader.KEY = GOOGLE_API_KEY;
+            GoogleMapsLoader.LIBRARIES = ['places'];
+            GoogleMapsLoader.load();
+            GoogleMapsLoader.onLoad(this.onApiLoad);
         }
 
         onApiLoad(google) {

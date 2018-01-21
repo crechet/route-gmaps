@@ -4,6 +4,6 @@ import './point.css';
 
 export default ({ point }) => {
     return(
-        <li className="point">{ point }</li>
+        <li className="point">{ point.name }</li>
     );
 };
