@@ -19,7 +19,7 @@ export default class Point extends Component{
 
     handleDeleteClick() {
         let { onDeletePoint, point } = this.props;
-        onDeletePoint(point);
+        onDeletePoint(point.id);
     }
 
     render() {

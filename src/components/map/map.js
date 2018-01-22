@@ -16,9 +16,10 @@ export default class Map extends Component {
         this.handleAddPoint = this.handleAddPoint.bind(this);
         this.handleDeletePoint = this.handleDeletePoint.bind(this);
         this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
+        this.onDirectionsChanged = this.onDirectionsChanged.bind(this);
         this.handleDisplayRoute = this.handleDisplayRoute.bind(this);
         this.addPointMarker = this.addPointMarker.bind(this);
-        this.reinitMap = this.reinitMap.bind(this);
+        this.setMapCenterToLastPoint = this.setMapCenterToLastPoint.bind(this);
 
         this.directionsService = null;
         this.directionsDisplay = null;
@@ -62,81 +63,87 @@ export default class Map extends Component {
             let { lat, lng, zoom } = this.state;
 
             // Map config object.
-            let mapConfig = {
-                center: { lat, lng },
-                zoom
+            let mapConfig = { center: { lat, lng }, zoom };
+
+            // Add directionsService for calculating routes.
+            this.directionsService = new mapApi.maps.DirectionsService();
+            // Add directionsDisplay for displaying calculated route.
+            let directionsRendererConfig = {
+                preserveViewport: true,
+                draggable: true
             };
+            this.directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
 
             // Initiate map.
             this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig), lat, lng, zoom, mapApi });
         }
     }
 
-    reinitMap() {
-        let { points, mapApi, zoom } = this.state;
-        let mapConfig = { center: points[points.length - 1].geometry.location, zoom };
-        this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig) });
+    setMapCenterToLastPoint() {
+        let { points, map } = this.state;
+        let lastPoint = _.last(points);
+        if (lastPoint) {
+            map.setCenter(lastPoint.geometry.location);
+        }
     }
 
     calculateAndDisplayRoute() {
-        this.reinitMap();
+        this.setMapCenterToLastPoint();
         let { mapApi } = this.props;
         let { map, points } = this.state;
-        let origin = points[0].geometry.location;
-        let destination = points[points.length - 1].geometry.location;
 
-        const generateWaypoints = () => {
-            // Don't pass waypoints if only one point in route.
-            if (points.length <= 1) return [];
+        if (points.length === 0) {
+            // Clear directionsDisplay display. Remove route from map.
+            this.directionsDisplay.setMap(null);
+        } else {
+            let origin = points[0] && points[0].geometry.location;
+            let destination = points[points.length - 1] && points[points.length - 1].geometry.location;
 
-            let tmpPoints = _.clone(points);
-            tmpPoints.pop();
-            tmpPoints.shift();
-            tmpPoints = _.map(tmpPoints, (point, i) => {
-                return {
-                    location: point.geometry.location,
-                    // If false, indicates that the route should be biased to go through this waypoint.
-                    stopover: true
-                }
-            });
+            const generateWaypoints = () => {
+                // Don't pass waypoints if only one point in route.
+                if (points.length <= 1) return [];
+                let tmpPoints = _.clone(points);
+                tmpPoints.pop();
+                tmpPoints.shift();
+                tmpPoints = _.map(tmpPoints, (point, i) => {
+                    return {
+                        location: point.geometry.location,
+                        // If false, indicates that the route should be biased to go through this waypoint.
+                        stopover: true
+                    }
+                });
+                return tmpPoints;
+            };
 
-            return tmpPoints;
-        };
+            let waypoints = generateWaypoints();
 
-        let waypoints = generateWaypoints();
-
-        // if (points.length < 2) return;
-
-        // Add directionsService for calculating routes.
-        this.directionsService = new mapApi.maps.DirectionsService();
-
-        // Add directionsDisplay for displaying calculated route.
-        let directionsRendererConfig = {
             // Bind directionsDisplay to our map.
-            map: map,
-            preserveViewport: true,
-            draggable: true
-        };
-        this.directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
+            this.directionsDisplay.setMap(map);
+            this.directionsDisplay.addListener('directions_changed', this.onDirectionsChanged);
 
-        // Route request config object.
-        let routeRequestConfig = {
-            origin: origin,
-            destination: destination,
-            waypoints: waypoints,
-            optimizeWaypoints: true,
-            travelMode: 'DRIVING',
-            unitSystem: mapApi.maps.UnitSystem.METRIC
-        };
+            // Route request config object.
+            let routeRequestConfig = {
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints,
+                optimizeWaypoints: true,
+                travelMode: 'DRIVING',
+                unitSystem: mapApi.maps.UnitSystem.METRIC
+            };
 
-        // Calculate route.
-        this.directionsService.route(routeRequestConfig, this.handleDisplayRoute);
+            // Calculate route.
+            this.directionsService.route(routeRequestConfig, this.handleDisplayRoute);
+        }
+    }
+
+    onDirectionsChanged() {
+        let currentDirections = this.directionsDisplay.getDirections();
+        console.log('directions_changed currentDirections', currentDirections);
     }
 
     handleDisplayRoute(response, status) {
         if (status === 'OK') {
             console.log('calculated route response', response);
-
             // Display calculated route.
             this.directionsDisplay.setDirections(response);
         } else {
@@ -171,14 +178,18 @@ export default class Map extends Component {
         // Add place to points list.
         this.setState({
             points: this.state.points.concat(place)
-        });
+        }, this.calculateAndDisplayRoute);
 
         //this.addPointMarker(place);
-        this.calculateAndDisplayRoute();
     }
 
-    handleDeletePoint(point) {
-        console.log('delete point', point);
+    // Delete point from points list.
+    handleDeletePoint(pointToDeleteId) {
+        this.setState({
+            points: _.filter(this.state.points, (point) => {
+                return point.id !== pointToDeleteId;
+            })
+        }, this.calculateAndDisplayRoute);
     }
 
     renderPoints() {
