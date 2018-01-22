@@ -14,6 +14,7 @@ export default class Map extends Component {
         super(props);
 
         this.handleAddPoint = this.handleAddPoint.bind(this);
+        this.handleDeletePoint = this.handleDeletePoint.bind(this);
         this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
         this.handleDisplayRoute = this.handleDisplayRoute.bind(this);
         this.addPointMarker = this.addPointMarker.bind(this);
@@ -28,7 +29,6 @@ export default class Map extends Component {
             zoom: Map.defaultProps.zoom,
             map: null,
             points: [],
-            markers: []
         };
     }
     // Render one time and never render again.
@@ -144,20 +144,6 @@ export default class Map extends Component {
         }
     }
 
-    // Adds new point to the points list.
-    handleAddPoint(place) {
-        if (!place) return false;
-        console.log('place', place);
-
-        // Add place to points list.
-        this.setState({
-            points: this.state.points.concat(place)
-        });
-
-        //this.addPointMarker(place);
-        this.calculateAndDisplayRoute();
-    }
-
     // TODO not in use now...
     addPointMarker(place) {
         /*if (!place) return false;
@@ -177,13 +163,34 @@ export default class Map extends Component {
         });*/
     }
 
+    // Adds new point to the points list.
+    handleAddPoint(place) {
+        if (!place) return false;
+        console.log('place', place);
+
+        // Add place to points list.
+        this.setState({
+            points: this.state.points.concat(place)
+        });
+
+        //this.addPointMarker(place);
+        this.calculateAndDisplayRoute();
+    }
+
+    handleDeletePoint(point) {
+        console.log('delete point', point);
+    }
+
     renderPoints() {
         let { mapApi } = this.props;
         let { map, points } = this.state;
 
         if (map) {
             return(
-                <Points mapApi={ mapApi } map={ map } onAddPoint={ this.handleAddPoint } points={ points } />
+                <Points mapApi={ mapApi } map={ map }
+                        points={ points }
+                        onAddPoint={ this.handleAddPoint }
+                        onDeletePoint={ this.handleDeletePoint } />
             );
         }
     }

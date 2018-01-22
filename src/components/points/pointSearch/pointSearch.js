@@ -33,7 +33,6 @@ class PointSearch extends Component {
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
             if (!place.geometry) {
-                // onAddPoint(null);
                 return;
             }
 

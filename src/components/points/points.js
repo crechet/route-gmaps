@@ -8,12 +8,12 @@ import PointsList from './pointsList/pointsList';
 
 export default class Points extends Component {
     render() {
-        let { mapApi, map, onAddPoint, points } = this.props;
+        let { mapApi, map, points, onAddPoint, onDeletePoint } = this.props;
 
         return(
             <div className="points">
                 <PointSearch mapApi={ mapApi } map={ map } onAddPoint={ onAddPoint } />
-                <PointsList mapApi={ mapApi } map={ map } points={ points }/>
+                <PointsList mapApi={ mapApi } map={ map } points={ points } onDeletePoint={ onDeletePoint } />
             </div>
         );
     }
@@ -21,5 +21,6 @@ export default class Points extends Component {
 
 Points.propTypes = {
     mapApi: PropTypes.object.isRequired,
-    onAddPoint: PropTypes.func.isRequired
+    onAddPoint: PropTypes.func.isRequired,
+    onDeletePoint: PropTypes.func.isRequired
 };
