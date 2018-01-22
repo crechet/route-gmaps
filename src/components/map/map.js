@@ -15,15 +15,20 @@ export default class Map extends Component {
 
         this.handleAddPoint = this.handleAddPoint.bind(this);
         this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
+        this.handleDisplayRoute = this.handleDisplayRoute.bind(this);
         this.addPointMarker = this.addPointMarker.bind(this);
+        this.reinitMap = this.reinitMap.bind(this);
+
+        this.directionsService = null;
+        this.directionsDisplay = null;
 
         this.state = {
             lat: Map.defaultProps.lat,
             lng: Map.defaultProps.lng,
             zoom: Map.defaultProps.zoom,
             map: null,
-            // points: {}
-            points: []
+            points: [],
+            markers: []
         };
     }
     // Render one time and never render again.
@@ -63,76 +68,89 @@ export default class Map extends Component {
             };
 
             // Initiate map.
-            this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig), lat, lng, zoom });
+            this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig), lat, lng, zoom, mapApi });
         }
     }
 
+    reinitMap() {
+        let { points, mapApi, zoom } = this.state;
+        let mapConfig = { center: points[points.length - 1].geometry.location, zoom };
+        this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig) });
+    }
+
     calculateAndDisplayRoute() {
-        // TODO rearange waypoints.
+        this.reinitMap();
         let { mapApi } = this.props;
         let { map, points } = this.state;
+        let origin = points[0].geometry.location;
+        let destination = points[points.length - 1].geometry.location;
 
         const generateWaypoints = () => {
-            return _.map(points, (point) => {
+            // Don't pass waypoints if only one point in route.
+            if (points.length <= 1) return [];
+
+            let tmpPoints = _.clone(points);
+            tmpPoints.pop();
+            tmpPoints.shift();
+            tmpPoints = _.map(tmpPoints, (point, i) => {
                 return {
                     location: point.geometry.location,
+                    // If false, indicates that the route should be biased to go through this waypoint.
                     stopover: true
                 }
             });
+
+            return tmpPoints;
         };
+
         let waypoints = generateWaypoints();
 
+        // if (points.length < 2) return;
+
         // Add directionsService for calculating routes.
-        const directionsService = new mapApi.maps.DirectionsService();
+        this.directionsService = new mapApi.maps.DirectionsService();
 
         // Add directionsDisplay for displaying calculated route.
         let directionsRendererConfig = {
             // Bind directionsDisplay to our map.
             map: map,
             preserveViewport: true,
-            // draggable: true
+            draggable: true
         };
-        const directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
+        this.directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
 
+        // Route request config object.
         let routeRequestConfig = {
-            origin: waypoints[0].location,
-            destination: waypoints[waypoints.length - 1].location,
+            origin: origin,
+            destination: destination,
             waypoints: waypoints,
             optimizeWaypoints: true,
             travelMode: 'DRIVING',
             unitSystem: mapApi.maps.UnitSystem.METRIC
         };
 
-        directionsService.route(routeRequestConfig, function(response, status) {
-            if (status === 'OK') {
-                console.log('calculated route response', response);
-                // Display calculated route.
-                directionsDisplay.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
-        });
+        // Calculate route.
+        this.directionsService.route(routeRequestConfig, this.handleDisplayRoute);
+    }
+
+    handleDisplayRoute(response, status) {
+        if (status === 'OK') {
+            console.log('calculated route response', response);
+
+            // Display calculated route.
+            this.directionsDisplay.setDirections(response);
+        } else {
+            window.alert('Directions request failed due to ' + status);
+        }
     }
 
     // Adds new point to the points list.
     handleAddPoint(place) {
         if (!place) return false;
         console.log('place', place);
-        let { map } = this.state;
-
-        // Center map to selected position.
-        if (place.geometry && place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-            map.setCenter(place.geometry.location);
-        } else {
-            map.setZoom(15);
-            map.setCenter(place.geometry.location);
-        }
 
         // Add place to points list.
         this.setState({
-            // TODO: objects or array...
-            // points: { ...this.state.points, [place.id]: place }
             points: this.state.points.concat(place)
         });
 
