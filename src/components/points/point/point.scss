@@ -1,3 +1,44 @@
-.point {
+@import 'styles/_variables.scss';
 
+.point {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    cursor: pointer;
+    padding: .1em .4em;
+    background-color: $turquoise-light;
+    border-radius: 5px;
+    border: 1px solid $turquoise-dark;
+    margin-bottom: .6em;
+
+    &:first-child {
+        margin-top: .6em;
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &_is-dragging {
+        cursor: grabbing;
+    }
+
+    &_is-over-target {
+        opacity: 1;
+        background-color: orange;
+    }
+
+    &-info {
+        flex: auto;
+    }
+
+    .cross {
+        font-size: .8em;
+
+        &:hover {
+            cursor: pointer;
+            color: $turquoise-darkest;
+        }
+    }
 }

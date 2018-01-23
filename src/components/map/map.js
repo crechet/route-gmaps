@@ -15,6 +15,7 @@ export default class Map extends Component {
 
         this.handleAddPoint = this.handleAddPoint.bind(this);
         this.handleDeletePoint = this.handleDeletePoint.bind(this);
+        this.handleDropPoint = this.handleDropPoint.bind(this);
         this.calculateAndDisplayRoute = this.calculateAndDisplayRoute.bind(this);
         this.onDirectionsChanged = this.onDirectionsChanged.bind(this);
         this.handleDisplayRoute = this.handleDisplayRoute.bind(this);
@@ -126,7 +127,8 @@ export default class Map extends Component {
                 origin: origin,
                 destination: destination,
                 waypoints: waypoints,
-                optimizeWaypoints: true,
+                // Set false to connect route in strict order.
+                optimizeWaypoints: false,
                 travelMode: 'DRIVING',
                 unitSystem: mapApi.maps.UnitSystem.METRIC
             };
@@ -192,16 +194,39 @@ export default class Map extends Component {
         }, this.calculateAndDisplayRoute);
     }
 
+    // Here we must handle changing points order.
+    handleDropPoint(sourcePointId, targetPointId) {
+        console.log('sourcePointId, targetPointId: ', sourcePointId, targetPointId);
+
+        let { points } = this.state;
+        // debugger;
+
+        let source = _.find(points, point => point.id === sourcePointId );
+        let currentSourceIndex = _.findIndex(points, point => point.id === sourcePointId );
+        let target = _.find(points, point => point.id === targetPointId );
+        let currentTargetIndex = _.findIndex(points, point => point.id === targetPointId );
+
+        let tempPoints = _.clone(points);
+        tempPoints[currentSourceIndex] = target;
+        tempPoints[currentTargetIndex] = source;
+
+        this.setState({
+            points: tempPoints
+        }, this.calculateAndDisplayRoute);
+    }
+
     renderPoints() {
         let { mapApi } = this.props;
         let { map, points } = this.state;
 
         if (map) {
             return(
-                <Points mapApi={ mapApi } map={ map }
+                <Points mapApi={ mapApi }
+                        map={ map }
                         points={ points }
                         onAddPoint={ this.handleAddPoint }
-                        onDeletePoint={ this.handleDeletePoint } />
+                        onDeletePoint={ this.handleDeletePoint }
+                        onDropPoint={ this.handleDropPoint } />
             );
         }
     }

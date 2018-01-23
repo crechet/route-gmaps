@@ -3,15 +3,16 @@
 .points {
     background-color: $turquoise-lightest;
     position: absolute;
-    margin: 0.5%;
-    top: 0;
-    left: 0;
+    //margin: 3.35% 0.5% 0;
+    top: 80px;
+    left: 10px;
     width: 100%;
     max-width: 25%;
-    max-height: 70vh;
+    max-height: 80vh;
+    padding: 10px;
     border-radius: 5px;
     border: 1px solid $turquoise-dark;
     box-shadow: 2px 2px 7px $turquoise-darkest;
-    overflow-y: auto;
+    overflow: hidden;
     z-index: 2;
 }

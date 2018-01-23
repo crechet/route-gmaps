@@ -2,12 +2,13 @@
     overflow: hidden;
 
     .form-control {
-        margin: .6em .6em 0;
-    }
-
-    input[type="text"] {
         min-width: 125px;
         width: 100%;
-        padding: .4em .6em;
+
+        &__input-text {
+            min-width: 125px;
+            width: 100%;
+            padding: .4em .6em;
+        }
     }
 }

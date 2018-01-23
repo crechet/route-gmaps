@@ -57,7 +57,7 @@ class PointSearch extends Component {
             <div className="point-search">
                 <form onSubmit={ this.handleFormSubmit } className="form">
                     <div className="form-control">
-                        <input type="text" className="input" name="newPoint" autoComplete="off"
+                        <input type="text" className="form-control__input-text" name="newPoint" autoComplete="off"
                                placeholder={ this.placeholder }
                                ref={ (input) => { this.searchInput = input; } } />
                     </div>

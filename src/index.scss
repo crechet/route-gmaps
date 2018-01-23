@@ -1,4 +1,5 @@
 @import 'normalize.css/normalize';
+@import 'styles/_icons.css';
 
 * {
     box-sizing: border-box;
@@ -12,6 +13,11 @@ p, div, ul, li {
     margin: 0;
 }
 
+ol, ul, li {
+    list-style: none;
+    padding: 0;
+}
+
 body {
     min-width: 320px;
     margin: 0;
@@ -19,7 +25,6 @@ body {
     font-family: sans-serif;
     font-size: 100%;
     line-height: 1.75;
-    background-color: orange;
     position: relative;
     overflow-x: hidden;
 }
