@@ -74,6 +74,7 @@ export default class Map extends Component {
                 draggable: true
             };
             this.directionsDisplay = new mapApi.maps.DirectionsRenderer(directionsRendererConfig);
+            this.directionsDisplay.addListener('directions_changed', this.onDirectionsChanged);
 
             // Initiate map.
             this.setState({ map: new mapApi.maps.Map(this.refs.map, mapConfig), lat, lng, zoom, mapApi });
@@ -120,7 +121,6 @@ export default class Map extends Component {
 
             // Bind directionsDisplay to our map.
             this.directionsDisplay.setMap(map);
-            this.directionsDisplay.addListener('directions_changed', this.onDirectionsChanged);
 
             // Route request config object.
             let routeRequestConfig = {
