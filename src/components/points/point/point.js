@@ -8,7 +8,6 @@ import './point.css';
 // Specifies the Point Drag Source. Describe how Drag Source reacts on DnD event.
 const pointSource = {
     beginDrag(props) {
-        console.log('begin drag point props', props);
         let { point } = props;
         return {
             sourcePointId: point.id
@@ -72,11 +71,7 @@ class Point extends Component {
 
     render() {
         let { point } = this.props;
-        const { isDragging, isOver, highlighted, connectDragSource, connectDropTarget, text } = this.props;
-
-        let pointStyle = {
-            opacity: isDragging ? 0.5 : 1
-        };
+        const { isDragging, isOver, connectDragSource, connectDropTarget } = this.props;
 
         let pointClassName = ['point'];
         if (isOver) pointClassName.push('point_is-over-target');
@@ -86,9 +81,9 @@ class Point extends Component {
         return(
             connectDragSource(
                 connectDropTarget(
-                    <li className={pointClassName} style={pointStyle}>
+                    <li className={pointClassName}>
                         <p className="point-info">{ point.name }</p>
-                        <p className="cross icon-cross" onClick={ this.handleDeleteClick }></p>
+                        <p className="point-cross icon-cross" onClick={ this.handleDeleteClick }></p>
                     </li>
                 )
             )

@@ -11,6 +11,7 @@
     border-radius: 5px;
     border: 1px solid $turquoise-dark;
     margin-bottom: .6em;
+    opacity: 1;
 
     &:first-child {
         margin-top: .6em;
@@ -21,19 +22,20 @@
     }
 
     &_is-dragging {
+        opacity: 0.5;
         cursor: grabbing;
     }
 
     &_is-over-target {
         opacity: 1;
-        background-color: orange;
+        background-color: $turquoise-darkest;
     }
 
     &-info {
         flex: auto;
     }
 
-    .cross {
+    &-cross {
         font-size: .8em;
 
         &:hover {

@@ -175,6 +175,14 @@ export default class Map extends Component {
     // Adds new point to the points list.
     handleAddPoint(place) {
         if (!place) return false;
+
+        // Don't add point that already in point list.
+        let checkPointInList = _.find(this.state.points, point => point.id === place.id);
+        if (checkPointInList) {
+            alert('Место уже в списке');
+            return;
+        }
+
         console.log('place', place);
 
         // Add place to points list.
@@ -196,10 +204,7 @@ export default class Map extends Component {
 
     // Here we must handle changing points order.
     handleDropPoint(sourcePointId, targetPointId) {
-        console.log('sourcePointId, targetPointId: ', sourcePointId, targetPointId);
-
         let { points } = this.state;
-        // debugger;
 
         let source = _.find(points, point => point.id === sourcePointId );
         let currentSourceIndex = _.findIndex(points, point => point.id === sourcePointId );
