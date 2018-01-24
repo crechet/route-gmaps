@@ -33,25 +33,6 @@ export default class Map extends Component {
             points: [],
         };
     }
-    // Render one time and never render again.
-    // TODO check this...
-    /*shouldComponentUpdate() {
-        return false;
-    }*/
-
-    // Component have new props values.
-    /*componentDidUpdate(prevProps, prevState) {
-        if (prevProps.mapApi !== this.props.mapApi) {
-            this.initMap();
-        }
-    }*/
-
-    // Component receive new props, but not update current props. Update map props here.
-    componentWillReceiveProps(nextProps) {
-        // Call internal map library methods.
-        // this.map.panTo();
-        // console.log('componentWillReceiveProps', this.props);
-    }
 
     componentDidMount() {
         this.initMap();
@@ -138,11 +119,7 @@ export default class Map extends Component {
         }
     }
 
-    onDirectionsChanged() {
-        let currentDirections = this.directionsDisplay.getDirections();
-        console.log('directions_changed currentDirections', currentDirections);
-    }
-
+    // Display calculated route.
     handleDisplayRoute(response, status) {
         if (status === 'OK') {
             console.log('calculated route response', response);
@@ -151,6 +128,12 @@ export default class Map extends Component {
         } else {
             window.alert('Directions request failed due to ' + status);
         }
+    }
+
+    // Handle route change.
+    onDirectionsChanged() {
+        let currentDirections = this.directionsDisplay.getDirections();
+        console.log('directions_changed currentDirections', currentDirections);
     }
 
     // TODO not in use now...
